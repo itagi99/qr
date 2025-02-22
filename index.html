@@ -51,7 +51,6 @@
             border: none;
             border-radius: 8px;
             transition: background-color 0.3s ease;
-            margin: 5px;
         }
         button:hover {
             background-color: #0056b3;
@@ -67,9 +66,6 @@
             color: #333;
             margin-top: 20px;
         }
-        .share-buttons {
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
@@ -82,17 +78,9 @@
 
         <div id="qrcode"></div>
         <div id="amountDisplay"></div>
-
-        <!-- Share and Download Buttons -->
-        <div class="share-buttons">
-            <button onclick="downloadQRCode()">Download QR Code</button>
-            <button onclick="shareQRCode()">Share QR Code</button>
-        </div>
     </div>
 
     <script>
-        let qrCodeElement = null;
-
         function generateQRCode() {
             const amount = document.getElementById('amount').value;
             if (!amount) {
@@ -108,7 +96,7 @@
             document.getElementById('amountDisplay').innerHTML = '';
 
             // Generate new QR code
-            qrCodeElement = new QRCode(document.getElementById('qrcode'), {
+            new QRCode(document.getElementById('qrcode'), {
                 text: upiLink,
                 width: 200,
                 height: 200
@@ -116,93 +104,6 @@
 
             // Display the amount below the QR code
             document.getElementById('amountDisplay').innerHTML = `Amount: ₹${amount}`;
-        }
-
-        function downloadQRCode() {
-            if (!qrCodeElement) {
-                alert("Please generate a QR code first.");
-                return;
-            }
-
-            const qrCodeImage = document.querySelector("#qrcode img");
-            if (qrCodeImage) {
-                const amount = document.getElementById('amount').value;
-
-                // Create a canvas to combine QR code and amount text
-                const canvas = document.createElement("canvas");
-                const context = canvas.getContext("2d");
-
-                // Set canvas dimensions
-                canvas.width = 250; // Width of the combined image
-                canvas.height = 300; // Height of the combined image
-
-                // Draw the QR code on the canvas
-                context.drawImage(qrCodeImage, 25, 0, 200, 200); // Centered QR code
-
-                // Add the amount text below the QR code
-                context.font = "20px Arial";
-                context.fillStyle = "#333";
-                context.textAlign = "center";
-                context.fillText(`Amount: ₹${amount}`, canvas.width / 2, 250);
-
-                // Convert canvas to image and trigger download
-                const link = document.createElement("a");
-                link.href = canvas.toDataURL("image/png");
-                link.download = "Annapurna_Traders_QR_Code.png";
-                link.click();
-            }
-        }
-
-        async function shareQRCode() {
-            if (!qrCodeElement) {
-                alert("Please generate a QR code first.");
-                return;
-            }
-
-            const qrCodeImage = document.querySelector("#qrcode img");
-            if (qrCodeImage) {
-                const amount = document.getElementById('amount').value;
-
-                // Create a canvas to combine QR code and amount text
-                const canvas = document.createElement("canvas");
-                const context = canvas.getContext("2d");
-
-                // Set canvas dimensions
-                canvas.width = 250; // Width of the combined image
-                canvas.height = 300; // Height of the combined image
-
-                // Draw the QR code on the canvas
-                context.drawImage(qrCodeImage, 25, 0, 200, 200); // Centered QR code
-
-                // Add the amount text below the QR code
-                context.font = "20px Arial";
-                context.fillStyle = "#333";
-                context.textAlign = "center";
-                context.fillText(`Amount: ₹${amount}`, canvas.width / 2, 250);
-
-                // Convert canvas to a Blob
-                canvas.toBlob(async (blob) => {
-                    const file = new File([blob], "Annapurna_Traders_QR_Code.png", {
-                        type: "image/png",
-                    });
-
-                    // Share the image using the Web Share API
-                    if (navigator.share) {
-                        try {
-                            await navigator.share({
-                                title: "Annapurna Traders - UPI QR Code",
-                                text: `Scan this QR code to pay ₹${amount} to Annapurna Traders.`,
-                                files: [file],
-                            });
-                            console.log("QR code shared successfully");
-                        } catch (error) {
-                            console.error("Error sharing QR code:", error);
-                        }
-                    } else {
-                        alert("Sharing is not supported in your browser. Please download the QR code and share it manually.");
-                    }
-                }, "image/png");
-            }
         }
     </script>
 </body>

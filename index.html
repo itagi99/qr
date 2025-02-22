@@ -153,7 +153,7 @@
             }
         }
 
-        function shareQRCode() {
+        async function shareQRCode() {
             if (!qrCodeElement) {
                 alert("Please generate a QR code first.");
                 return;
@@ -180,21 +180,24 @@
                 context.textAlign = "center";
                 context.fillText(`Amount: ₹${amount}`, canvas.width / 2, 250);
 
-                // Convert canvas to image
-                canvas.toBlob((blob) => {
+                // Convert canvas to a Blob
+                canvas.toBlob(async (blob) => {
                     const file = new File([blob], "Annapurna_Traders_QR_Code.png", {
                         type: "image/png",
                     });
 
                     // Share the image using the Web Share API
                     if (navigator.share) {
-                        navigator.share({
-                            title: "Annapurna Traders - UPI QR Code",
-                            text: `Scan this QR code to pay ₹${amount} to Annapurna Traders.`,
-                            files: [file],
-                        })
-                            .then(() => console.log("QR code shared successfully"))
-                            .catch((error) => console.error("Error sharing QR code:", error));
+                        try {
+                            await navigator.share({
+                                title: "Annapurna Traders - UPI QR Code",
+                                text: `Scan this QR code to pay ₹${amount} to Annapurna Traders.`,
+                                files: [file],
+                            });
+                            console.log("QR code shared successfully");
+                        } catch (error) {
+                            console.error("Error sharing QR code:", error);
+                        }
                     } else {
                         alert("Sharing is not supported in your browser. Please download the QR code and share it manually.");
                     }

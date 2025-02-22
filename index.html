@@ -51,6 +51,7 @@
             border: none;
             border-radius: 8px;
             transition: background-color 0.3s ease;
+            margin: 5px;
         }
         button:hover {
             background-color: #0056b3;
@@ -66,6 +67,9 @@
             color: #333;
             margin-top: 20px;
         }
+        .share-buttons {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -78,9 +82,17 @@
 
         <div id="qrcode"></div>
         <div id="amountDisplay"></div>
+
+        <!-- Share and Download Buttons -->
+        <div class="share-buttons">
+            <button onclick="downloadQRCode()">Download QR Code</button>
+            <button onclick="shareQRCode()">Share QR Code</button>
+        </div>
     </div>
 
     <script>
+        let qrCodeElement = null;
+
         function generateQRCode() {
             const amount = document.getElementById('amount').value;
             if (!amount) {
@@ -96,7 +108,7 @@
             document.getElementById('amountDisplay').innerHTML = '';
 
             // Generate new QR code
-            new QRCode(document.getElementById('qrcode'), {
+            qrCodeElement = new QRCode(document.getElementById('qrcode'), {
                 text: upiLink,
                 width: 200,
                 height: 200
@@ -104,6 +116,47 @@
 
             // Display the amount below the QR code
             document.getElementById('amountDisplay').innerHTML = `Amount: ₹${amount}`;
+        }
+
+        function downloadQRCode() {
+            if (!qrCodeElement) {
+                alert("Please generate a QR code first.");
+                return;
+            }
+
+            const qrCodeImage = document.querySelector("#qrcode img");
+            if (qrCodeImage) {
+                const link = document.createElement("a");
+                link.href = qrCodeImage.src;
+                link.download = "Annapurna_Traders_QR_Code.png";
+                link.click();
+            }
+        }
+
+        function shareQRCode() {
+            if (!qrCodeElement) {
+                alert("Please generate a QR code first.");
+                return;
+            }
+
+            const qrCodeImage = document.querySelector("#qrcode img");
+            if (qrCodeImage) {
+                const amount = document.getElementById('amount').value;
+                const shareText = `Scan this QR code to pay ₹${amount} to Annapurna Traders.`;
+                const shareData = {
+                    title: 'Annapurna Traders - UPI QR Code',
+                    text: shareText,
+                    url: qrCodeImage.src,
+                };
+
+                if (navigator.share) {
+                    navigator.share(shareData)
+                        .then(() => console.log('QR code shared successfully'))
+                        .catch((error) => console.error('Error sharing QR code:', error));
+                } else {
+                    alert("Sharing is not supported in your browser. Please download the QR code and share it manually.");
+                }
+            }
         }
     </script>
 </body>

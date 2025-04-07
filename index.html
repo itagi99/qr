@@ -7,64 +7,112 @@
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f4f4f9;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
         .container {
             text-align: center;
             background: white;
-            padding: 30px;
+            padding: 30px 40px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
         }
         h1 {
-            font-size: 32px;
-            color: #333;
-            margin-bottom: 10px;
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-weight: 700;
         }
         .tagline {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 20px;
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 25px;
             font-style: italic;
         }
-        input {
-            padding: 12px;
-            font-size: 16px;
-            width: 200px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+        .input-group {
             margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+        input {
+            padding: 12px 15px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3498db;
         }
         button {
             padding: 12px 24px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            background-color: #007bff;
+            background-color: #3498db;
             color: white;
             border: none;
             border-radius: 8px;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 20px;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(41, 128, 185, 0.3);
+        }
+        button:active {
+            transform: translateY(0);
         }
         #qrcode {
             margin: 20px auto;
             display: flex;
             justify-content: center;
+            padding: 15px;
+            border: 1px dashed #e0e0e0;
+            border-radius: 8px;
+            background: #f9f9f9;
         }
         #amountDisplay {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
-            color: #333;
-            margin-top: 20px;
+            color: #27ae60;
+            margin: 15px 0;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 8px;
+        }
+        .merchant-info {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
@@ -72,24 +120,45 @@
     <div class="container">
         <h1>ANNAPURNA TRADERS</h1>
         <div class="tagline">HAPPY TO SERVE YOU BETTER</div>
-        <label for="amount">Enter Amount:</label>
-        <input type="number" id="amount" placeholder="Enter amount">
+        
+        <div class="input-group">
+            <label for="amount">Enter Amount (₹):</label>
+            <input type="number" id="amount" placeholder="e.g. 100, 250, 500" min="1" step="1">
+        </div>
+        
         <button onclick="generateQRCode()">Generate QR Code</button>
 
         <div id="qrcode"></div>
         <div id="amountDisplay"></div>
+        
+        <div class="merchant-info">
+            Merchant UPI ID: 6363304520@okbizaxis
+        </div>
     </div>
 
     <script>
         function generateQRCode() {
-            const amount = document.getElementById('amount').value;
+            const amountInput = document.getElementById('amount');
+            const amount = amountInput.value.trim();
+            
             if (!amount) {
                 alert("Please enter an amount.");
+                amountInput.focus();
+                return;
+            }
+            
+            if (parseFloat(amount) <= 0) {
+                alert("Please enter a valid positive amount.");
+                amountInput.focus();
                 return;
             }
 
             const upiId = '6363304520@okbizaxis';
-            const upiLink = `upi://pay?pa=${upiId}&pn=RecipientName&am=${amount}&cu=INR`;
+            const merchantName = 'Annapurna Traders';
+            const transactionNote = 'Payment to Annapurna Traders';
+            
+            // Construct UPI payment link with additional parameters
+            const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(merchantName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(transactionNote)}`;
 
             console.log("Generated UPI Link: ", upiLink);
 
@@ -97,19 +166,39 @@
             document.getElementById('qrcode').innerHTML = '';
             document.getElementById('amountDisplay').innerHTML = '';
 
-            // Generate new QR code
-            new QRCode(document.getElementById('qrcode'), {
-                text: upiLink,
-                width: 200,
-                height: 200
-            });
+            // Generate new QR code with error correction
+            try {
+                new QRCode(document.getElementById('qrcode'), {
+                    text: upiLink,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#2c3e50",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
 
-            // Display the amount below the QR code
-            document.getElementById('amountDisplay').innerHTML = `Amount: ₹${amount}`;
+                // Display the amount below the QR code
+                document.getElementById('amountDisplay').innerHTML = `Payable Amount: ₹${amount}`;
+            } catch (error) {
+                console.error("QR Code generation failed:", error);
+                alert("Failed to generate QR code. Please try again.");
+            }
         }
 
-        // Checking if QRCode library loaded correctly
-        console.log("QRCode library status: ", typeof QRCode !== 'undefined' ? 'Loaded' : 'Not Loaded');
+        // Allow form submission on Enter key
+        document.getElementById('amount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateQRCode();
+            }
+        });
+
+        // Check if QRCode library loaded correctly
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof QRCode === 'undefined') {
+                console.error("QRCode library failed to load");
+                alert("Payment feature is currently unavailable. Please try again later.");
+            }
+        });
     </script>
 </body>
 </html>

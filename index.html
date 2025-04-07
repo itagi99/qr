@@ -91,6 +91,8 @@
             const upiId = '6363304520@okbizaxis';
             const upiLink = `upi://pay?pa=${upiId}&pn=RecipientName&am=${amount}&cu=INR`;
 
+            console.log("Generated UPI Link: ", upiLink);
+
             // Clear previous QR code and amount display
             document.getElementById('qrcode').innerHTML = '';
             document.getElementById('amountDisplay').innerHTML = '';
@@ -105,6 +107,9 @@
             // Display the amount below the QR code
             document.getElementById('amountDisplay').innerHTML = `Amount: ₹${amount}`;
         }
+
+        // Checking if QRCode library loaded correctly
+        console.log("QRCode library status: ", typeof QRCode !== 'undefined' ? 'Loaded' : 'Not Loaded');
     </script>
 </body>
 </html>

@@ -5,102 +5,287 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UPI Payment QR Code Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-udder        body {
-            font-family: Arial, sans-serif;
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
         }
+        
         .container {
             text-align: center;
-            padding: 30px;
+            padding: 2.5rem;
             background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
             max-width: 450px;
+            margin: 1rem;
+            transition: var(--transition);
+            animation: fadeIn 0.5s ease-out;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
         h2 {
-            color: #333;
-            margin-bottom: 20px;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
-        input[type="number"] {
-            padding: 10px;
-            margin: 15px 0;
-            width: 220px;
-            font-size: 18px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
+        
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
         }
+        
+        .input-group {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+        
+        .input-group input {
+            padding: 1rem 1rem 1rem 2.5rem;
+            width: 100%;
+            font-size: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            background-color: #f8f9fa;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            background-color: white;
+        }
+        
+        .input-group::before {
+            content: "₹";
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
         button {
-            padding: 12px 25px;
-            font-size: 18px;
-            background-color: #4CAF50;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: var(--transition);
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+        
         button:hover {
-            background-color: #45a049;
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
         #qrcode {
-            margin: 25px auto;
+            margin: 1.5rem auto;
             display: flex;
             justify-content: center;
+            padding: 1rem;
+            background: white;
+            border-radius: var(--border-radius);
+            border: 1px solid #e9ecef;
+            transition: var(--transition);
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
         }
-        #amountDisplay {
-            font-size: 28px;
-            font-weight: bold;
-            color: #4CAF50;
-            margin-top: 20px;
-            display: none;
+        
+        #qrcode.show {
+            opacity: 1;
+            height: auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .amount-display {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 1rem 0;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: var(--transition);
+        }
+        
+        .amount-display.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .upi-details {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            font-size: 0.85rem;
+            text-align: left;
+        }
+        
+        .upi-details strong {
+            color: var(--primary);
+        }
+        
+        .footer {
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            button {
+                padding: 0.8rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>annapurna traders</h2>
-        <p>Enter amount to generate payment QR code</p>
-        <input type="number" id="amount" min="1" placeholder="Enter amount in INR">
-        <br>
+        <div class="logo">UPI</div>
+        <h2>ANNAPURNA TRADERS</h2>
+        <p class="subtitle">Enter amount to generate payment QR code</p>
+        
+        <div class="input-group">
+            <input type="number" id="amount" min="1" placeholder="Enter amount in INR">
+        </div>
+        
         <button onclick="generateQR()">Generate QR Code</button>
+        
         <div id="qrcode"></div>
-        <div id="amountDisplay"></div>
+        <div id="amountDisplay" class="amount-display"></div>
+        
+        <div class="upi-details">
+            <p><strong>UPI ID:</strong> 6363304520@okbizaxis</p>
+            <p><strong>Note:</strong> Scan the QR code using any UPI payment app</p>
+        </div>
+        
+        <div class="footer">
+            <p>Safe and secure digital payments</p>
+        </div>
     </div>
 
     <script>
         function generateQR() {
             const amount = document.getElementById('amount').value;
+            const qrcodeElement = document.getElementById('qrcode');
+            const amountDisplay = document.getElementById('amountDisplay');
+            
+            // Validate amount
             if (!amount || amount <= 0) {
-                alert('Please enter a valid amount greater than 0');
+                showError('Please enter a valid amount greater than ₹1');
                 return;
             }
-
-            const upiID = '6363304520@okbizaxis';
-            const upiURI = `upi://pay?pa=${upiID}&pn=Payee&am=${amount}&cu=INR`;
-
-            // Clear previous QR code and amount
-            document.getElementById('qrcode').innerHTML = '';
             
-            // Generate new QR code
-            new QRCode(document.getElementById('qrcode'), {
-                text: upiURI,
-                width: 200,
-                height: 200,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-
-            // Display amount in bold
+            // Clear previous QR code
+            qrcodeElement.innerHTML = '';
+            qrcodeElement.classList.remove('show');
+            amountDisplay.classList.remove('show');
+            
+            // Create UPI URI
+            const upiID = '6363304520@okbizaxis';
+            const upiURI = `upi://pay?pa=${upiID}&pn=Recipient&am=${amount}&cu=INR&tn=Payment`;
+            
+            // Generate new QR code with slight delay for animation
+            setTimeout(() => {
+                new QRCode(qrcodeElement, {
+                    text: upiURI,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // Show elements with animation
+                qrcodeElement.classList.add('show');
+                amountDisplay.textContent = `₹${amount}`;
+                amountDisplay.classList.add('show');
+                
+                // Smooth scroll to QR code
+                qrcodeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+        
+        function showError(message) {
             const amountDisplay = document.getElementById('amountDisplay');
-            amountDisplay.textContent = `Amount: ₹${amount}`;
-            amountDisplay.style.display = 'block';
+            amountDisplay.textContent = message;
+            amountDisplay.style.color = '#dc3545';
+            amountDisplay.classList.add('show');
+            
+            // Reset after 3 seconds
+            setTimeout(() => {
+                amountDisplay.classList.remove('show');
+                setTimeout(() => {
+                    amountDisplay.style.color = '';
+                    amountDisplay.textContent = '';
+                }, 300);
+            }, 3000);
         }
     </script>
 </body>

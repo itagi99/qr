@@ -5,265 +5,287 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UPI Payment QR Code Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6a4cff;
-            --secondary: #22d1ee;
-            --accent: #d72660;
-            --background: #24243e;
-            --light: #eaf4fa;
-            --dark: #181428;
-            --glass: rgba(255,255,255,0.18);
-            --blur: blur(10px);
-            --border-radius: 18px;
-            --box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            --transition: all 0.35s cubic-bezier(.68,-0.55,.27,1.55);
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
         }
-        body {
-            min-height: 100vh;
-            background: linear-gradient(130deg, var(--primary), var(--secondary) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Poppins', sans-serif;
+        
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: var(--dark);
         }
+        
         .container {
-            max-width: 400px;
-            width: 100%;
-            background: var(--glass);
+            text-align: center;
+            padding: 2.5rem;
+            background-color: white;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            padding: 2.2rem 1.8rem 1.3rem;
-            backdrop-filter: var(--blur);
-            animation: fadeIn 0.6s cubic-bezier(.68,-0.55,.27,1.55);
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(32px);}
-            to {opacity: 1; transform: translateY(0);}
-        }
-        .logo {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 50%;
-            width: 64px;
-            height: 64px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            font-size: 2rem;
-            font-weight: 600;
-            box-shadow: 0 4px 16px var(--secondary);
-            margin: 0 auto 1.5rem;
-        }
-        h2 {
-            text-align: center;
-            margin: 0 0 0.5rem;
-            color: var(--primary);
-            font-weight: 600;
-        }
-        .subtitle {
-            text-align: center;
-            color: #767685;
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .input-group {
-            margin-bottom: 1.4rem;
-            position: relative;
-        }
-        .input-group input {
             width: 100%;
-            padding: 1rem 1rem 1rem 2.6rem;
-            border-radius: var(--border-radius);
-            border: 2px solid #e9ecef;
-            background: #fff;
-            font-size: 1.04rem;
-            box-shadow: 0 2px 8px rgba(98, 93, 183, 0.07);
+            max-width: 450px;
+            margin: 1rem;
             transition: var(--transition);
+            animation: fadeIn 0.5s ease-out;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .input-group {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+        
+        .input-group input {
+            padding: 1rem 1rem 1rem 2.5rem;
+            width: 100%;
+            font-size: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            background-color: #f8f9fa;
+        }
+        
         .input-group input:focus {
-            border-color: var(--primary);
             outline: none;
-            background: #f1f9ff;
-            box-shadow: 0 0 0 3px rgba(106,76,255,0.12);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            background-color: white;
         }
+        
         .input-group::before {
             content: "₹";
             position: absolute;
             left: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
             color: var(--primary);
         }
+        
         button {
-            width: 100%;
-            padding: 1rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            background-color: var(--primary);
+            color: white;
             border: none;
             border-radius: var(--border-radius);
-            background: linear-gradient(95deg, var(--primary) 60%, var(--accent) 100%);
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 600;
-            box-shadow: 0 2px 10px rgba(106,76,255,0.19);
             cursor: pointer;
-            margin: 0.9rem 0 0.6rem;
             transition: var(--transition);
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+        
         button:hover {
-            filter: brightness(1.07);
-            transform: translateY(-2px) scale(1.03);
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
         #qrcode {
-            margin: 1.3rem auto 0.5rem;
+            margin: 1.5rem auto;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 220px;
-            background: var(--light);
+            padding: 1rem;
+            background: white;
             border-radius: var(--border-radius);
-            box-shadow: 0 3px 9px rgba(76,76,76,0.11);
+            border: 1px solid #e9ecef;
             transition: var(--transition);
             opacity: 0;
             height: 0;
             overflow: hidden;
-            border: 1px solid #e9ecef;
         }
-        #qrcode.show { opacity: 1; height: auto; animation: fadeIn 0.5s cubic-bezier(.68,-0.55,.27,1.55);}
+        
+        #qrcode.show {
+            opacity: 1;
+            height: auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
         .amount-display {
-            font-size: 1.35rem;
-            color: var(--primary);
+            font-size: 1.5rem;
             font-weight: 600;
-            margin: 1.2rem 0 0.8rem;
-            opacity: 0; transform: translateY(10px);
+            color: var(--primary);
+            margin: 1rem 0;
+            opacity: 0;
+            transform: translateY(10px);
             transition: var(--transition);
         }
-        .amount-display.show { opacity:1; transform: translateY(0);}
+        
+        .amount-display.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
         .upi-details {
-            background: rgba(243, 242, 255,0.86);
-            border-radius: var(--border-radius);
+            margin-top: 1.5rem;
             padding: 1rem;
-            font-size: 0.96rem;
-            margin-top: 1.6rem;
-            box-shadow: 0 2px 6px rgba(124, 110, 198,0.05);
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            font-size: 0.85rem;
             text-align: left;
         }
-        .upi-details strong { color: var(--accent);}
+        
+        .upi-details strong {
+            color: var(--primary);
+        }
+        
         .footer {
-            margin-top: 1.3rem;
-            font-size: 0.80rem;
-            color: #767685;
-            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: #6c757d;
         }
-        #timer {
-            font-size: 1rem;
-            color: var(--accent);
-            font-weight: bold;
-            background: #fff2f8;
-            border-radius: 16px;
-            padding: 0.6rem 0.9rem;
-            margin-bottom: 10px;
-            display: inline-block;
-            box-shadow: 0 2px 8px rgba(215,38,96,0.14);
-        }
+        
         @media (max-width: 480px) {
-            .container { padding: 1.2rem;}
-            .logo {width: 48px; height: 48px; font-size: 1.3rem;}
-            .upi-details, .footer { font-size: 0.98rem;}
+            .container {
+                padding: 1.5rem;
+            }
+            
+            button {
+                padding: 0.8rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo"><span role="img" aria-label="QR">💸</span></div>
+        <div class="logo">UPI</div>
         <h2>ANNAPURNA TRADERS</h2>
-        <div class="subtitle">Enter amount to generate payment QR code</div>
-
+        <p class="subtitle">Enter amount to generate payment QR code</p>
+        
         <div class="input-group">
             <input type="number" id="amount" min="1" placeholder="Enter amount in INR">
         </div>
-
-        <button id="generateBtn" onclick="generateQR()">Generate QR Code</button>
-        <div id="timer"></div>
+        
+        <button onclick="generateQR()">Generate QR Code</button>
+        
         <div id="qrcode"></div>
         <div id="amountDisplay" class="amount-display"></div>
-
+        
         <div class="upi-details">
             <p><strong>UPI ID:</strong> 6363304520@okbizaxis</p>
             <p><strong>Note:</strong> Scan the QR code using any UPI payment app</p>
         </div>
-
+        
         <div class="footer">
             <p>Safe and secure digital payments</p>
         </div>
     </div>
+
     <script>
-        let timerInterval;
         function generateQR() {
             const amount = document.getElementById('amount').value;
             const qrcodeElement = document.getElementById('qrcode');
             const amountDisplay = document.getElementById('amountDisplay');
-            const timerDisplay = document.getElementById('timer');
+            
             // Validate amount
             if (!amount || amount <= 0) {
                 showError('Please enter a valid amount greater than ₹1');
                 return;
             }
-            // Stop previous timer
-            clearInterval(timerInterval);
-            timerDisplay.textContent = '';
+            
             // Clear previous QR code
             qrcodeElement.innerHTML = '';
             qrcodeElement.classList.remove('show');
             amountDisplay.classList.remove('show');
+            
+            // Create UPI URI
             const upiID = '6363304520@okbizaxis';
             const upiURI = `upi://pay?pa=${upiID}&pn=Recipient&am=${amount}&cu=INR&tn=Payment`;
-            // FAST: No delay, instantly generate QR
-            new QRCode(qrcodeElement, {
-                text: upiURI,
-                width: 220, height: 220,
-                colorDark: "#1a1a1a",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            // Show UI
-            qrcodeElement.classList.add('show');
-            amountDisplay.textContent = `₹${amount}`;
-            amountDisplay.style.color = 'var(--primary)';
-            amountDisplay.classList.add('show');
-            // Timer logic
-            let time = 120;
-            timerDisplay.textContent = `QR valid for ${time} seconds ⏳`;
-            timerDisplay.style.display = 'inline-block';
-            timerInterval = setInterval(() => {
-                time--;
-                timerDisplay.textContent = `QR valid for ${time} seconds ⏳`;
-                if (time <= 0) {
-                    clearInterval(timerInterval);
-                    timerDisplay.textContent = 'QR expired ⛔';
-                    qrcodeElement.innerHTML = '';
-                    qrcodeElement.classList.remove('show');
-                    amountDisplay.textContent = '';
-                    amountDisplay.classList.remove('show');
-                }
-            }, 1000);
+            
+            // Generate new QR code with slight delay for animation
+            setTimeout(() => {
+                new QRCode(qrcodeElement, {
+                    text: upiURI,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // Show elements with animation
+                qrcodeElement.classList.add('show');
+                amountDisplay.textContent = `₹${amount}`;
+                amountDisplay.classList.add('show');
+                
+                // Smooth scroll to QR code
+                qrcodeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         }
+        
         function showError(message) {
             const amountDisplay = document.getElementById('amountDisplay');
             amountDisplay.textContent = message;
             amountDisplay.style.color = '#dc3545';
             amountDisplay.classList.add('show');
+            
+            // Reset after 3 seconds
             setTimeout(() => {
                 amountDisplay.classList.remove('show');
                 setTimeout(() => {
                     amountDisplay.style.color = '';
                     amountDisplay.textContent = '';
-                }, 350);
-            }, 2600);
+                }, 300);
+            }, 3000);
         }
     </script>
 </body>
